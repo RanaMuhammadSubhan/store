@@ -10,6 +10,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const JWT_SECRET ="hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jbkj?[]]pou89ywe";
 const mongoUrl = process.env.DATABASE_URL;
+app.use(express.static('uploads'));
 // Connect to the MongoDB database using the DATABASE_URL environment variable
 mongoose
   .connect(process.env.DATABASE_URL, {
@@ -193,8 +194,8 @@ router.post('/categories', async (req, res) => {
 // res.send({status:"error"});
 //     }
 // });
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const categoryRouter = require('./routes/categoryRoutes');
 app.use('/api', categoryRouter);
 const productRouter = require('./routes/productRoutes');
 app.use('/api', productRouter); // Move this line below the categoryRouter definition
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
