@@ -22,7 +22,7 @@ const upload = multer({ storage: storage });
 router.post('/categories', upload.single('image'), async (req, res) => {
   try {
     const { name } = req.body;
-    let image = req.file ? req.file.path : '';
+    let image = req.file ? req.file.path : 'image is not uploaded';
     
     // Replace backslashes with forward slashes in the image path
     image = image.replace(/\\/g, '/');
