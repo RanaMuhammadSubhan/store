@@ -15,7 +15,6 @@ const storage = multer.diskStorage({
   },
 });
 
-
 const upload = multer({ storage: storage });
 
 // Route to create a new category with image upload
@@ -23,10 +22,7 @@ router.post('/categories', upload.single('image'), async (req, res) => {
   try {
     const { name } = req.body;
     let image = req.file ? req.file.path : 'image is not uploaded';
-    
-    // Replace backslashes with forward slashes in the image path
     image = image.replace(/\\/g, '/');
-
     const newCategory = new Category({
       name,
       image,
