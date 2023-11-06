@@ -194,7 +194,7 @@ router.post('/categories', async (req, res) => {
 // res.send({status:"error"});
 //     }
 // });
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const categoryRouter = require('./routes/categoryRoutes');
 app.use('/api', categoryRouter);
 const productRouter = require('./routes/productRoutes');
