@@ -11,6 +11,12 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  image: {
+    type: String, 
+  },
+  stock: {
+    type: Number,
+  },
   // Add other fields as needed
   category: {
     type: mongoose.Schema.Types.ObjectId,

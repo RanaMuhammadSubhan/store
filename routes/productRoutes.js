@@ -13,6 +13,25 @@ router.post('/products', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// Add more routes as needed (e.g., update, delete)
+router.post("/deleteProducts", async (req, res) => {
+  const { productid } = req.body;
+  try {
+    const result = await Product.deleteOne({ _id: productid });
+    if (result.deletedCount === 1) {
+      console.log("Product deleted successfully");
+      res.send({ status: "Ok", data: "Deleted" });
+    } else {
+      console.log("Product not found");
+      res.status(404).send({ status: "Error", data: "Product not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ status: "Error", data: "Failed to delete Product" });
+  }
+});
+
+
 
 // Get all products
 router.get('/products', async (req, res) => {
@@ -39,23 +58,7 @@ router.get('/products-by-category', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-// Add more routes as needed (e.g., update, delete)
-router.post("/deleteProducts", async (req, res) => {
-  const { productid } = req.body;
-  try {
-    const result = await Product.deleteOne({ _id: productid });
-    if (result.deletedCount === 1) {
-      console.log("Product deleted successfully");
-      res.send({ status: "Ok", data: "Deleted" });
-    } else {
-      console.log("Product not found");
-      res.status(404).send({ status: "Error", data: "Product not found" });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ status: "Error", data: "Failed to delete Product" });
-  }
-});
+
 router.put("/updateProduct/:productid", async (req, res) => {
   const { productid } = req.params;
   const updatedProduct = req.body; // The updated product data
