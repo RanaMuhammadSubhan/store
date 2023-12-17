@@ -8,7 +8,7 @@ const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const JWT_SECRET ="hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jbkj?[]]pou89ywe";
+const JWT_SECRET ='hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jbkj?[]]pou89ywe';
 const mongoUrl = process.env.DATABASE_URL;
 app.use(express.static('uploads'));
 // Connect to the MongoDB database using the DATABASE_URL environment variable
@@ -57,6 +57,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
+
 app.post("/login-user", async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -64,28 +65,77 @@ app.post("/login-user", async (req, res) => {
   if (!user) {
     return res.json({ error: "User Not found" });
   }
+
   if (await bcrypt.compare(password, user.password)) {
-    const token = jwt.sign({ email: user.email }, JWT_SECRET, {
+    const tokenData = {
+      email: user.email,
+      name: user.name, // Assuming you have a 'name' field in your User model
+    };
+
+    const token = jwt.sign(tokenData, JWT_SECRET, {
       expiresIn: "15m",
     });
 
-    if (res.status(201)) {
-      return res.json({ status: "ok", data: token });
-    } else {
-      return res.json({ error: "error" });
-    }
+    return res.json({ status: "ok", data: token });
   }
-  res.json({ status: "error", error: "InvAlid Password" });
-  // if (password === user.password) {
+
+  return res.json({ status: "error", error: "Invalid Password" });
+});
+// app.get("/user-profile", (req, res) => {
+//   const token = req.headers.authorization.split(' ')[1]; // Assuming the token is sent in the 'Authorization' header
+
+//   jwt.verify(token, JWT_SECRET, (err, decoded) => {
+//     if (err) {
+//       return res.status(401).json({ error: "Unauthorized" });
+//     }
+
+//     const { email, name } = decoded;
+//     // Now you have access to the user's email and name, and you can use them in your profile page
+//     return res.json({ email, name });
+//   });
+// });
+
+app.get('/data', async (req, res) => {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized - Missing Token' });
+  }
+
+  try {
+    // Verify the JWT token
+    const decodedToken = jwt.verify(token, 'hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jbkj?[]]pou89ywe');
+    const userEmail = decodedToken.email || decodedToken.username; // Depending on your user model
+
+    console.log("Decoded Token:", decodedToken);
+    console.log("User Email:", userEmail);
+
+    // Retrieve user data based on the email
+    const user = { email: userEmail, }; // You may fetch the actual user data from your database
+
+    console.log("User:", user);
+
+    if (!user.email) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const responseUser = { email: user.email, name: user.name };
+    return res.json(responseUser);
+
+    return res.json(user);
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return res.status(401).json({ error: 'Unauthorized - Invalid Token' });
+  }
+});
+
+
+ // if (password === user.password) {
   //   const token = jwt.sign({}, JWT_SECRET);
   //   return res.json({ status: "ok login Succesfully", data: token });
   // } else {
   //   return res.json({ status: "error", error: "Password incorrect" });
   // }
   //Compare the entered password with the user's hashed password
-
-});
-
 app.post("/Rightbar", async (req, res) => {
   const { token } = req.body;
   try {
