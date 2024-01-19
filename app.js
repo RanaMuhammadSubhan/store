@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const router = express.Router();
 const path = require('path'); // Import the path module
-
+const hCaptcha = require('hcaptcha');
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
@@ -37,7 +37,27 @@ app.use(express.json());
 //
 require("./userdetails");
 const User = mongoose.model("UserInfo");
-app.post("/register", async (req, res) => {
+
+
+
+const hCaptchaSecretKey = 'ES_2b2968974ebe43979998b8787503c6ac';
+
+const verifyHCaptcha = async (req, res, next) => {
+  const hCaptchaToken = req.body.hcaptchaToken;
+
+  try {
+    // Verify hCaptcha token
+    await hCaptcha.verify(hCaptchaSecretKey, hCaptchaToken);
+    // If verification is successful, move to the next middleware (or route handler)
+    next();
+  } catch (error) {
+    console.error('hCaptcha verification failed:', error);
+    res.status(400).json({ error: 'hCaptcha verification failed' });
+  }
+};
+
+
+app.post("/register",  verifyHCaptcha, async (req, res) => {
   const { username, email, password } = req.body;
   const encryptedpassword = await bcrypt.hash(password,10);
   try {
@@ -56,12 +76,30 @@ app.post("/register", async (req, res) => {
     res.send({ status: "error" });
   }
 });
+// });
+// function checkIfUserIsAdmin(user) {
+//   // Example: Check if the username is in the list of admin usernames
+//   const adminUsernames = ["rayan", "superadmin"];
+//   return adminUsernames.includes(user.username);
+// }
+app.post("/login-user" , verifyHCaptcha, async (req, res) => {
+  const { username, password } = req.body;
 
+  if (username === "admin" && password === "admin123") {
+    // If the credentials match, send a token and set the role to "admin"
+    const tokenData = {
+      username: "haseeb",
+      role: "admin",
+    };
 
-app.post("/login-user", async (req, res) => {
-  const { username, email, password } = req.body;
+    const token = jwt.sign(tokenData, JWT_SECRET, {
+      expiresIn: "15m",
+    });
 
-  const user = await User.findOne({ $or: [{ email }, { username }] });
+    return res.json({ status: "ok", data: token, role: "admin" });
+  }
+
+  const user = await User.findOne({ $or: [{ email: username }, { username }] });
   if (!user) {
     return res.json({ error: "User Not found" });
   }
@@ -69,18 +107,44 @@ app.post("/login-user", async (req, res) => {
   if (await bcrypt.compare(password, user.password)) {
     const tokenData = {
       email: user.email,
-      name: user.name, // Assuming you have a 'name' field in your User model
+      username: user.username,
+      // Add other user details as needed
     };
 
     const token = jwt.sign(tokenData, JWT_SECRET, {
       expiresIn: "15m",
     });
 
-    return res.json({ status: "ok", data: token });
+    return res.json({ status: "ok", data: token, role: "user" });
   }
 
   return res.json({ status: "error", error: "Invalid Password" });
 });
+
+// app.post("/login-user", async (req, res) => {
+//   const { username, email, password, role} = req.body;
+
+//   const user = await User.findOne({ $or: [{ email }, { username }] });
+//   if (!user) {
+//     return res.json({ error: "User Not found" });
+//   }
+
+//   if (await bcrypt.compare(password, user.password)) {
+//     const tokenData = {
+//       email: user.email,
+//       name: user.name, // Assuming you have a 'name' field in your User model
+//       role: user.role,
+//     };
+//     const isAdmin = checkIfUserIsAdmin(user); // Implement this function
+//     const token = jwt.sign({tokenData,isAdmin},  JWT_SECRET, {
+//       expiresIn: "15m",
+//     });
+
+//     return res.json({ status: "ok", data: token ,  role: user.role });
+//   }
+
+//   return res.json({ status: "error", error: "Invalid Password" });
+// });
 // app.get("/user-profile", (req, res) => {
 //   const token = req.headers.authorization.split(' ')[1]; // Assuming the token is sent in the 'Authorization' header
 
@@ -94,7 +158,6 @@ app.post("/login-user", async (req, res) => {
 //     return res.json({ email, name });
 //   });
 // });
-
 app.get('/data', async (req, res) => {
   const token = req.headers.authorization?.replace('Bearer ', '');
 
