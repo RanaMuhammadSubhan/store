@@ -40,7 +40,7 @@ const User = mongoose.model("UserInfo");
 
 
 
-const hCaptchaSecretKey = 'ES_2b2968974ebe43979998b8787503c6ac';
+const hCaptchaSecretKey = 'ES_3ba2d09655a84c25a99e64f3a7e1e8cc';
 
 const verifyHCaptcha = async (req, res, next) => {
   const hCaptchaToken = req.body.hcaptchaToken;
@@ -56,6 +56,25 @@ const verifyHCaptcha = async (req, res, next) => {
   }
 };
 
+// const verifyHCaptcha = async (req, res, next) => {
+//   try {
+//     const hCaptchaToken = req.body.hcaptchaToken;
+//     console.log('hCaptcha Token:', hCaptchaToken);
+//     // Verify hCaptcha token
+//     const result = await hCaptcha.verify(hCaptchaSecretKey, hCaptchaToken);
+
+//     if (result.success) {
+//       // If verification is successful, move to the next middleware (or route handler)
+//       next();
+//     } else {
+//       console.error('hCaptcha verification failed:', result);
+//       res.status(400).json({ status: 'error', error: 'hCaptcha verification failed' });
+//     }
+//   } catch (error) {
+//     console.error('hCaptcha verification failed:', error);
+//     res.status(400).json({ status: 'error', error: 'hCaptcha verification failed' });
+//   }
+// };
 
 app.post("/register",  verifyHCaptcha, async (req, res) => {
   const { username, email, password } = req.body;
