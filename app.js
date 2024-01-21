@@ -42,18 +42,43 @@ const User = mongoose.model("UserInfo");
 
 const hCaptchaSecretKey = 'ES_3ba2d09655a84c25a99e64f3a7e1e8cc';
 
-const verifyHCaptcha = async (req, res, next) => {
-  const hCaptchaToken = req.body.hcaptchaToken;
+// const verifyHCaptcha = async (req, res, next) => {
+//   const hCaptchaToken = req.body.hCaptchaToken;
+//   console.log('hCaptcha Token:', hCaptchaToken);
+//   console.log('Request Body:', req.body);
 
+//   try {
+//     // Verify hCaptcha token
+//     await hCaptcha.verify(hCaptchaSecretKey, hCaptchaToken);
+//     // If verification is successful, move to the next middleware (or route handler)
+//     next();
+//   } catch (error) {
+//     console.error('hCaptcha verification failed:', error);
+//     res.status(400).json({ error: 'hCaptcha verification failed' });
+//   }
+// };
+const verifyHCaptcha = async (req, res, next) => {
   try {
+    const hCaptchaToken = req.body.hCaptchaToken;
+    console.log('hCaptcha Token:', hCaptchaToken);
+
     // Verify hCaptcha token
-    await hCaptcha.verify(hCaptchaSecretKey, hCaptchaToken);
-    // If verification is successful, move to the next middleware (or route handler)
-    next();
+    const result = await hCaptcha.verify(hCaptchaSecretKey, hCaptchaToken);
+
+    console.log('hCaptcha Verification Result:', result);
+
+    if (result.success) {
+      // If verification is successful, move to the next middleware (or route handler)
+      next();
+    } else {
+      console.error('hCaptcha verification failed:', result);
+      res.status(400).json({ status: 'error', error: 'hCaptcha verification failed' });
+         
+     }
   } catch (error) {
     console.error('hCaptcha verification failed:', error);
-    res.status(400).json({ error: 'hCaptcha verification failed' });
-  }
+    res.status(400).json({ status: 'error', error: 'hCaptcha verification failed' });
+    }
 };
 
 // const verifyHCaptcha = async (req, res, next) => {
@@ -107,7 +132,9 @@ app.post("/login-user" , verifyHCaptcha, async (req, res) => {
   if (username === "admin" && password === "admin123") {
     // If the credentials match, send a token and set the role to "admin"
     const tokenData = {
-      username: "haseeb",
+      username: "admin",
+      email:"admin@gmail.com",
+      passowoord:"123",
       role: "admin",
     };
 
@@ -179,7 +206,7 @@ app.post("/login-user" , verifyHCaptcha, async (req, res) => {
 // });
 app.get('/data', async (req, res) => {
   const token = req.headers.authorization?.replace('Bearer ', '');
-
+console.log("tokendata ",token)
   if (!token) {
     return res.status(401).json({ error: 'Unauthorized - Missing Token' });
   }
