@@ -77,4 +77,32 @@ router.put("/updateProduct/:productid", async (req, res) => {
   }
 });
 
+// Purchase a product (associate it with an order)
+router.post("/purchaseProduct/:productId", async (req, res) => {
+  const { productId } = req.params;
+  const { totalCost, paymentMethod } = req.body;
+
+  try {
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    const newOrder = new Order({
+      products: [productId],
+      totalCost,
+      paymentMethod,
+    });
+
+    await newOrder.save();
+
+    product.order = newOrder._id;
+    await product.save();
+
+    res.json({ order: newOrder, product });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;

@@ -73,7 +73,7 @@ const verifyHCaptcha = async (req, res, next) => {
     } else {
       console.error('hCaptcha verification failed:', result);
       res.status(400).json({ status: 'error', error: 'hCaptcha verification failed' });
-         
+         s
      }
   } catch (error) {
     console.error('hCaptcha verification failed:', error);
@@ -358,3 +358,5 @@ const categoryRouter = require('./routes/categoryRoutes');
 app.use('/api', categoryRouter);
 const productRouter = require('./routes/productRoutes');
 app.use('/api', productRouter); // Move this line below the categoryRouter definition
+const orderRoutes = require('./routes/orderRoutes');
+app.use('/api', orderRoutes);
