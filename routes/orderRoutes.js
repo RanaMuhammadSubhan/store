@@ -31,4 +31,39 @@ router.get('/orders', async (req, res) => {
   }
 });
 
+
+//delete orders 
+router.delete('/orders/:orderId', async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+
+    // Find and remove the order
+    const deletedOrder = await Order.findByIdAndDelete(orderId);
+
+    if (!deletedOrder) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    res.json(deletedOrder);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//single order
+router.get('/orders/:orderId', async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const order = await Order.findById(orderId).populate('products');
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
