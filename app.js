@@ -8,6 +8,7 @@ const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const bodyParser = require('body-parser');
 const JWT_SECRET ='hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jbkj?[]]pou89ywe';
 const mongoUrl = process.env.DATABASE_URL;
 app.use(express.static('uploads'));
@@ -158,7 +159,7 @@ app.post("/login-user" , verifyHCaptcha, async (req, res) => {
     };
 
     const token = jwt.sign(tokenData, JWT_SECRET, {
-      expiresIn: "15m",
+      expiresIn: 60*60,
     });
 
     return res.json({ status: "ok", data: token, role: "user" });
@@ -354,9 +355,12 @@ router.post('/categories', async (req, res) => {
 //     }
 // });
 // app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(bodyParser.json());
 const categoryRouter = require('./routes/categoryRoutes');
 app.use('/api', categoryRouter);
 const productRouter = require('./routes/productRoutes');
 app.use('/api', productRouter); // Move this line below the categoryRouter definition
 const orderRoutes = require('./routes/orderRoutes');
 app.use('/api', orderRoutes);
+const contactRoutes = require('./routes/contactRoutes');
+app.use('/api/contact', contactRoutes);
