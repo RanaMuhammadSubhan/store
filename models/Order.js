@@ -14,6 +14,10 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  customerInfo:{
+    type: Object,
+    required:true,
+  },
   status: {
     type: String,
     default: 'Pending', // You can set a default status

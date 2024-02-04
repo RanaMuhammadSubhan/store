@@ -6,12 +6,13 @@ const Order = require('../models/Order');
 // Place a new order
 router.post('/orders', async (req, res) => {
   try {
-    const { products, totalCost, paymentMethod } = req.body;
+    const { products, totalCost, paymentMethod, customerInfo } = req.body;
     
     const newOrder = new Order({
       products,
       totalCost,
       paymentMethod,
+      customerInfo,
     });
 
     await newOrder.save();

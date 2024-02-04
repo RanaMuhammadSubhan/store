@@ -5,7 +5,7 @@ const path = require('path'); // Import the path module
 const hCaptcha = require('hcaptcha');
 const mongoose = require("mongoose");
 const cors = require("cors");
-const bcrypt = require("bcrypt");
+// const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const bodyParser = require('body-parser');
