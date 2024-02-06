@@ -5,7 +5,7 @@ const path = require('path'); // Import the path module
 const hCaptcha = require('hcaptcha');
 const mongoose = require("mongoose");
 const cors = require("cors");
-// const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const bodyParser = require('body-parser');
@@ -74,7 +74,6 @@ const verifyHCaptcha = async (req, res, next) => {
     } else {
       console.error('hCaptcha verification failed:', result);
       res.status(400).json({ status: 'error', error: 'hCaptcha verification failed' });
-         s
      }
   } catch (error) {
     console.error('hCaptcha verification failed:', error);
@@ -364,3 +363,5 @@ const orderRoutes = require('./routes/orderRoutes');
 app.use('/api', orderRoutes);
 const contactRoutes = require('./routes/contactRoutes');
 app.use('/api/contact', contactRoutes);
+const vendorRoutes = require('./routes/vendorRoutes');
+app.use('/api/vendor', vendorRoutes);
