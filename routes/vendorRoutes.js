@@ -11,5 +11,6 @@ router.post('/login', vendorController.login);
 
 // Vendor management (approval, etc.)
 router.post('/manage', vendorController.manage);
-
+router.get('/getallvendors', vendorController.getallvendors);
+router.post('/updateApproval/:vendorId', vendorController.updateApproval);
 module.exports = router;

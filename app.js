@@ -308,7 +308,25 @@ router.post('/categories', async (req, res) => {
 
 
 
+//admin approval api 
+app.post("/admin/approve-vendor", async (req, res) => {
+  const { userId } = req.body;
 
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ status: "error", error: "User not found" });
+    }
+
+    user.isApproved = true; // or user.status = 'approved';
+    await user.save();
+
+    return res.json({ status: "ok", message: "Vendor approved successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ status: "error", error: "Failed to approve vendor" });
+  }
+});
 
 
 

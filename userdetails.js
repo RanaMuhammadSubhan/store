@@ -6,9 +6,10 @@ const  UserDetailsScehma = new mongoose.Schema(
     password:String,
     role: { type: String, default: "user" },
 },
+
 {
     collection: "Userinfo",
-}
+},
 );
 
 mongoose.model("UserInfo", UserDetailsScehma);

@@ -17,6 +17,7 @@ const register = async (req, res) => {
       username,
       email,
       password: encryptedpassword,
+      isApproved: false, // or status: 'pending'
     });
 
     res.send({ status: 'ok', message: 'Vendor Successfully Registered' });
@@ -28,9 +29,9 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { username, password } = req.body;
 
-  const vendor = await Vendor.findOne({ $or: [{ email: username }, { username }] });
+  const vendor = await Vendor.findOne({ $or: [{ email: username }, { username, isApproved: true }] });
   if (!vendor) {
-    return res.json({ error: 'Vendor Not found' });
+    return res.json({ error: 'Vendor Not found or Not yet approved' });
   }
 
   if (await bcrypt.compare(password, vendor.password)) {
@@ -49,13 +50,44 @@ const login = async (req, res) => {
 
   return res.json({ status: 'error', error: 'Invalid Password' });
 };
-
+const getallvendors = async (req,res) =>{
+  try {
+    const vendors = await Vendor.find();
+    res.json({ status: 'ok', data: vendors });
+  } catch (error) {
+    console.error('Error fetching vendors:', error);
+    res.status(500).json({ status: 'error', error: 'Internal Server Error' });
+  }
+}
 const manage = async (req, res) => {
   // Implement vendor management logic (approval, etc.)
 };
+const updateApproval = async (req, res) => {
+  try {
+    const { vendorId } = req.params;
+    const { isApproved } = req.body;
 
+    // Find the vendor by ID and update the approval status
+    const updatedVendor = await Vendor.findByIdAndUpdate(
+      vendorId,
+      { isApproved },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedVendor) {
+      return res.status(404).json({ status: 'error', error: 'Vendor not found' });
+    }
+
+    res.json({ status: 'ok', data: updatedVendor });
+  } catch (error) {
+    console.error('Error updating approval status:', error);
+    res.status(500).json({ status: 'error', error: 'Internal Server Error' });
+  }
+};
 module.exports = {
   register,
   login,
   manage,
+  getallvendors,
+  updateApproval
 };
