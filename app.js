@@ -294,8 +294,6 @@ app.post("/deleteUser", async (req, res) => {
 
 
 
-
-
 router.post('/categories', async (req, res) => {
   try {
     const newCategory = new Category(req.body);
