@@ -1,11 +1,12 @@
 // vendorController.js
 const Vendor = require('../models/vendorModel');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const register = async (req, res) => {
   const { username, email, password } = req.body;
-  const encryptedpassword = await bcrypt.hash(password, 10);
+ const encryptedpassword = await bcrypt.hash(password, 10);
+  // const password1 = await (password,10);
 
   try {
     const oldVendor = await Vendor.findOne({ email });

@@ -5,7 +5,7 @@ const path = require('path'); // Import the path module
 const hCaptcha = require('hcaptcha');
 const mongoose = require("mongoose");
 const cors = require("cors");
-const bcrypt = require("bcrypt");
+const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const bodyParser = require('body-parser');
@@ -104,6 +104,8 @@ const verifyHCaptcha = async (req, res, next) => {
 app.post("/register",  verifyHCaptcha, async (req, res) => {
   const { username, email, password } = req.body;
   const encryptedpassword = await bcrypt.hash(password,10);
+  // const password1 = await (password,10);
+
   try {
     const oldUser = await User.findOne({ email });
     if (oldUser) {
@@ -150,7 +152,9 @@ app.post("/login-user" , verifyHCaptcha, async (req, res) => {
     return res.json({ error: "User Not found" });
   }
 
-  if (await bcrypt.compare(password, user.password)) {
+ if (await bcrypt.compare(password, user.password)) {
+    // if (await (password, user.password)) {
+
     const tokenData = {
       email: user.email,
       username: user.username,
@@ -381,3 +385,5 @@ const contactRoutes = require('./routes/contactRoutes');
 app.use('/api/contact', contactRoutes);
 const vendorRoutes = require('./routes/vendorRoutes');
 app.use('/api/vendor', vendorRoutes);
+const reviewsRouter = require('./routes/reviewRoutes');
+app.use('/api', reviewsRouter);
